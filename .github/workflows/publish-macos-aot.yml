@@ -1,0 +1,29 @@
+name: Publish .NET 8 AOT for macOS
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish AOT for macOS
+        run: dotnet publish /p:PublishAot=true -r osx-x64 -c Release
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-aot-release
+          path: bin/Release/net8.0/osx-x64/publish/
